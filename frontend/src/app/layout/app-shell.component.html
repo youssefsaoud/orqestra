@@ -1,5 +1,5 @@
 <a class="skip-link" href="#main-content">Skip to content</a>
-<div class="app-shell">
+<div class="app-shell" appShowcaseActions>
   <button *ngIf="mobileOpen" class="sidebar-backdrop" type="button" aria-label="Close navigation" (click)="closeNavigation()"></button>
   <aside #sidebar id="primary-navigation" class="sidebar" [class.open]="mobileOpen" aria-label="Primary navigation" (keydown)="navigationKeydown($event)">
     <a class="brand" routerLink="/dashboard" (click)="closeNavigation()">
@@ -50,6 +50,7 @@
           <strong>Orqestra</strong>
           <span>Project &amp; Vendor Platform</span>
         </div>
+        <span class="showcase-indicator">Read-only Showcase</span>
       </div>
 
       <ng-container *ngIf="currentUser$ | async as user; else anonymous">

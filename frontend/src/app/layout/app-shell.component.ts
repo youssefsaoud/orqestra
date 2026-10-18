@@ -3,6 +3,8 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } fro
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../core/auth/auth.service';
+import { ShowcaseActionsDirective } from '../core/showcase/showcase-actions.directive';
+import { ShowcaseService } from '../core/showcase/showcase.service';
 
 interface NavItem {
   label: string;
@@ -20,7 +22,7 @@ interface NavGroup {
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [AsyncPipe, NgFor, NgIf, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [AsyncPipe, NgFor, NgIf, RouterLink, RouterLinkActive, RouterOutlet, ShowcaseActionsDirective],
   templateUrl: './app-shell.component.html',
   styleUrls: ['./app-shell.component.css']
 })
@@ -61,7 +63,9 @@ export class AppShellComponent {
 
   @ViewChild('sidebar') private sidebar?: ElementRef<HTMLElement>;
   @ViewChild('menuButton') private menuButton?: ElementRef<HTMLButtonElement>;
-  constructor(private readonly authService: AuthService, private readonly router: Router, private readonly changeDetector: ChangeDetectorRef) {}
+  constructor(private readonly authService: AuthService, private readonly router: Router, private readonly changeDetector: ChangeDetectorRef, showcase: ShowcaseService) {
+    showcase.welcome();
+  }
 
   openNavigation(): void {
     this.mobileOpen = true;

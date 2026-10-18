@@ -13,6 +13,7 @@ describe('Team navigation permissions', () => {
         provide: AuthService, useValue: { currentUser: () => user, currentUser$: new BehaviorSubject(user), logout: () => {} }
       }] }).compileComponents();
       const fixture = TestBed.createComponent(AppShellComponent); fixture.detectChanges();
+      expect(fixture.nativeElement.querySelector('.topbar').textContent).toContain('Read-only Showcase');
       expect(!!fixture.nativeElement.querySelector('a[href="/team"]')).toBe(role === 'ADMIN');
       const menu: HTMLButtonElement = fixture.nativeElement.querySelector('.menu-button');
       menu.click(); fixture.detectChanges();

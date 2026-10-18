@@ -12,7 +12,7 @@
     <div class="detail-actions" *ngIf="project as item">
       <ng-container *ngIf="currentUser$ | async as user">
         <a *ngIf="canManage(user.role)" [routerLink]="['/projects', item.id, 'edit']">Edit project</a>
-        <button *ngIf="canManage(user.role)" type="button" (click)="deleteProject()">Delete</button>
+        <button data-showcase-action *ngIf="canManage(user.role)" type="button" (click)="deleteProject()">Delete</button>
       </ng-container>
     </div>
   </header>
@@ -105,7 +105,7 @@
             </label>
             <label>Next follow-up<input type="date" formControlName="nextFollowUpDate"></label>
             <label>Notes<input type="text" formControlName="notes" maxlength="4000"></label>
-            <button type="submit" [disabled]="!vendorForm.controls.vendorId.value">Assign vendor</button>
+            <button type="submit">Assign vendor</button>
           </form>
 
           <div class="vendor-list" *ngIf="filteredVendors.length; else noVendors">
@@ -126,8 +126,8 @@
               </div>
 
               <div class="vendor-actions">
-                <button type="button" class="secondary-button" (click)="beginEdit(vendor)">Edit outreach</button>
-                <button *ngIf="canManage(user.role)" type="button" class="danger-action" (click)="removeVendor(vendor)">Remove</button>
+                <button data-showcase-action type="button" class="secondary-button" (click)="beginEdit(vendor)">Edit outreach</button>
+                <button data-showcase-action *ngIf="canManage(user.role)" type="button" class="danger-action" (click)="removeVendor(vendor)">Remove</button>
               </div>
 
               <form *ngIf="editingVendorId === vendor.id" class="vendor-edit-form" [formGroup]="vendorEditForm" (ngSubmit)="saveVendor()">
@@ -186,7 +186,7 @@
                   <td>{{ quote.receivedDate | date:'mediumDate' }}</td>
                   <td>{{ quote.validUntil ? (quote.validUntil | date:'mediumDate') : 'Not set' }}</td>
                   <td><span class="status" [class.selected]="quote.selected">{{ quoteStatusLabel(quote.status) }}</span></td>
-                  <td><button type="button" class="secondary-button" [disabled]="!canManage(user.role) || quote.selected" (click)="selectQuote(quote)">{{ quote.selected ? 'Selected' : 'Select' }}</button></td>
+                  <td><button data-showcase-action type="button" class="secondary-button" [disabled]="!canManage(user.role) || quote.selected" (click)="selectQuote(quote)">{{ quote.selected ? 'Selected' : 'Select' }}</button></td>
                 </tr>
               </tbody>
             </table>
@@ -208,7 +208,7 @@
             <label>Received<input type="date" formControlName="receivedDate"></label>
             <label>Valid until<input type="date" formControlName="validUntil"></label>
             <label class="quote-notes">Notes<textarea rows="3" maxlength="4000" formControlName="notes"></textarea></label>
-            <button type="submit" [disabled]="!quoteForm.controls.projectVendorId.value || quoteForm.controls.amount.value === null">Record quotation</button>
+            <button type="submit">Record quotation</button>
           </form>
         </article>
       </ng-container>
@@ -232,7 +232,7 @@
             <span>{{ selectedFile?.name || 'Choose a PDF, image, text, or DOCX file' }}</span>
             <input type="file" accept=".pdf,.png,.jpg,.jpeg,.txt,.docx" (change)="selectDocument($event)">
           </label>
-          <button type="submit" [disabled]="!selectedFile">Upload document</button>
+          <button type="submit">Upload document</button>
         </form>
         <div class="document-list" *ngIf="documents.length; else noDocuments">
           <button type="button" class="document-row" *ngFor="let document of documents" (click)="downloadDocument(document)">

@@ -22,7 +22,7 @@
   <aside class="actions" *ngIf="currentUser$ | async as user">
     <a [routerLink]="['/contacts', item.id, 'edit']">Edit contact</a>
     <a [routerLink]="['/companies', item.companyId]">Open company</a>
-    <button *ngIf="canDelete(user.role)" type="button" class="danger" (click)="deleteContact()">Delete</button>
+    <button data-showcase-action *ngIf="canDelete(user.role)" type="button" class="danger" (click)="deleteContact()">Delete</button>
   </aside>
 </section>
 

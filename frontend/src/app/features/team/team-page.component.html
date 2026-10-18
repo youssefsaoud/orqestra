@@ -1,6 +1,6 @@
 <header class="page-header">
   <div><p>Administration</p><h1>Team</h1><span>Manage employees and invitation access to Orqestra.</span></div>
-  <button type="button" (click)="openInvite()">Invite employee</button>
+  <button data-showcase-action type="button" (click)="openInvite()">Invite employee</button>
 </header>
 
 <p *ngIf="error" class="error-message" role="alert">{{ error }}</p>
@@ -24,8 +24,8 @@
       <td><span class="status" [class.completed]="row.status === 'ACTIVE'">{{ statusLabel(row.status) }}</span><small class="delivery" *ngIf="row.invitation">{{ deliveryLabel(row.invitation.deliveryStatus) }}</small></td>
       <td>{{ row.sentAt ? (row.sentAt | date:'medium') : 'Not applicable' }}</td>
       <td><div class="row-actions" *ngIf="row.status === 'PENDING' || row.status === 'EXPIRED'">
-        <button type="button" class="secondary-button" [disabled]="!!busyId" (click)="resend(row.id)">{{ busyId === row.id ? 'Processing...' : 'Resend' }}</button>
-        <button type="button" class="danger-action" [disabled]="!!busyId" (click)="revoke(row.id)">Revoke</button>
+        <button data-showcase-action type="button" class="secondary-button" [disabled]="!!busyId" (click)="resend(row.id)">{{ busyId === row.id ? 'Processing...' : 'Resend' }}</button>
+        <button data-showcase-action type="button" class="danger-action" [disabled]="!!busyId" (click)="revoke(row.id)">Revoke</button>
       </div></td>
     </tr><tr *ngIf="!rows.length"><td colspan="5" class="empty-cell">No team members or invitations match these filters.</td></tr></tbody>
   </table>

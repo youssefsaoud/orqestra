@@ -1,4 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ElementRef } from '@angular/core';
+import { ShowcaseActionsDirective } from '../../core/showcase/showcase-actions.directive';
+import { ShowcaseService } from '../../core/showcase/showcase.service';
 import { of, throwError } from 'rxjs';
 import { TeamPageComponent } from './team-page.component';
 import { Invitation, TeamService } from './team.service';
@@ -18,6 +21,17 @@ describe('TeamPageComponent', () => {
     service.invitations.and.returnValue(of([pending, { ...pending, id: 'expired', status: 'EXPIRED' }]));
     await TestBed.configureTestingModule({ imports: [TeamPageComponent], providers: [{ provide: TeamService, useValue: service }] }).compileComponents();
     fixture = TestBed.createComponent(TeamPageComponent); page = fixture.componentInstance; fixture.detectChanges();
+  });
+  it('keeps Admin invitation actions visible but blocks their real handlers in the showcase shell', () => {
+    const showcase = TestBed.inject(ShowcaseService);
+    const boundary = new ShowcaseActionsDirective(new ElementRef(fixture.nativeElement),showcase);
+    const open = spyOn(page,'openInvite');
+    const actions = fixture.nativeElement.querySelectorAll('[data-showcase-action]') as NodeListOf<HTMLButtonElement>;
+    expect(actions.length).toBeGreaterThan(2);
+    actions.forEach(button => {button.click();expect(showcase.dialog$.value).toBe('restricted');showcase.close();});
+    expect(open).not.toHaveBeenCalled(); expect(service.invite).not.toHaveBeenCalled();
+    expect(service.resend).not.toHaveBeenCalled(); expect(service.revoke).not.toHaveBeenCalled();
+    boundary.ngOnDestroy();
   });
   it('renders human-readable roles, invitation statuses, and counts', () => {
     const text = fixture.nativeElement.textContent;

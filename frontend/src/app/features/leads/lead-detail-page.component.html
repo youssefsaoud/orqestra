@@ -32,7 +32,7 @@
         <option *ngFor="let rep of salesReps" [value]="rep.id">{{ rep.fullName }}</option>
       </select>
     </label>
-    <button *ngIf="canManage(user.role)" type="button" (click)="assign()">Save assignment</button>
+    <button data-showcase-action *ngIf="canManage(user.role)" type="button" (click)="assign()">Save assignment</button>
 
     <label>
       Status
@@ -40,8 +40,8 @@
         <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
       </select>
     </label>
-    <button type="button" (click)="changeStatus()">Update status</button>
-    <button *ngIf="canDelete(user.role)" type="button" class="danger" (click)="deleteLead()">Delete</button>
+    <button data-showcase-action type="button" (click)="changeStatus()">Update status</button>
+    <button data-showcase-action *ngIf="canDelete(user.role)" type="button" class="danger" (click)="deleteLead()">Delete</button>
   </aside>
 </section>
 

@@ -1,4 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { ElementRef } from '@angular/core';
+import { ShowcaseActionsDirective } from '../../core/showcase/showcase-actions.directive';
+import { ShowcaseService } from '../../core/showcase/showcase.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
@@ -27,6 +30,24 @@ describe('ProjectDetailPageComponent', () => {
         { provide: QuotationService, useValue: {} }
       ]
     }).compileComponents();
+  });
+
+  it('intercepts actual assignment, quotation and document controls before workflows run', () => {
+    spyOn(ProjectDetailPageComponent.prototype,'ngOnInit').and.stub();
+    const fixture = TestBed.createComponent(ProjectDetailPageComponent);
+    const page = fixture.componentInstance;
+    page.project = {id:'project',name:'Demo',reference:'DEMO',clientId:'client',clientName:'Client',status:'PLANNED',currencyCode:'USD',createdAt:'2026-10-01T09:00:00Z',updatedAt:'2026-10-01T09:00:00Z'};
+    const assign = spyOn(page,'addVendor'); const quote = spyOn(page,'createQuote'); const upload = spyOn(page,'uploadDocument');
+    fixture.detectChanges();
+    const showcase = TestBed.inject(ShowcaseService);
+    const boundary = new ShowcaseActionsDirective(new ElementRef(fixture.nativeElement),showcase);
+    for(const [tab,selector] of [['vendors','.vendor-form button[type="submit"]'],['quotations','.quote-form button[type="submit"]'],['documents','.document-form button[type="submit"]']]) {
+      page.setTab(tab as 'vendors'); fixture.detectChanges();
+      const button:HTMLButtonElement = fixture.nativeElement.querySelector(selector);
+      expect(button.disabled).toBeFalse(); button.click(); expect(showcase.dialog$.value).toBe('restricted'); showcase.close();
+    }
+    expect(assign).not.toHaveBeenCalled(); expect(quote).not.toHaveBeenCalled(); expect(upload).not.toHaveBeenCalled();
+    boundary.ngOnDestroy();
   });
 
   it('preserves workspace tab state and filters vendors without mutating assignments', () => {
