@@ -6,7 +6,17 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { authInterceptor } from './app/core/auth/auth.interceptor';
 import { showcaseInterceptor } from './app/core/showcase/showcase.interceptor';
+import { configureApiBaseUrl } from './app/core/showcase/runtime-config';
 
-bootstrapApplication(AppComponent, {
+fetch(new URL('assets/runtime-config.json', document.baseURI), { cache: 'no-store' }).then(response => {
+  if (!response.ok) throw new Error('Runtime configuration unavailable');
+  return response.json();
+}).then(config => {
+  configureApiBaseUrl(config.apiBaseUrl);
+  return bootstrapApplication(AppComponent, {
   providers: [provideRouter(routes), provideHttpClient(withInterceptors([showcaseInterceptor, authInterceptor]))]
-}).catch((error) => console.error(error));
+  });
+}).catch(() => {
+  document.body.textContent = 'Showcase configuration is unavailable. Please try again later.';
+  console.error('Showcase configuration or initialization failed.');
+});
