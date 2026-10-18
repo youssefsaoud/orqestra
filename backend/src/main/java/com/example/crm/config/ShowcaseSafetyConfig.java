@@ -10,6 +10,9 @@ public class ShowcaseSafetyConfig {
     @Bean
     static BeanFactoryPostProcessor rejectShowcaseWriters(Environment environment) {
         return factory -> {
+            if (!"orqestra-showcase".equals(environment.getProperty("crm.jwt.issuer"))) {
+                throw new IllegalStateException("Showcase requires its own JWT issuer");
+            }
             for (String property : new String[] {"spring.flyway.enabled", "crm.bootstrap.admin.enabled",
                 "crm.demo.seed.enabled", "crm.recruiter-demo.enabled"}) {
                 if (environment.getProperty(property, Boolean.class, false)) {

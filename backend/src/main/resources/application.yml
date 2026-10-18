@@ -66,8 +66,8 @@ crm:
   cors:
     allowed-origin: ${CRM_CORS_ALLOWED_ORIGIN:http://localhost:4200}
   jwt:
-    secret: ${CRM_JWT_SECRET:dev-only-change-this-secret-dev-only-change-this-secret}
-    issuer: ${CRM_JWT_ISSUER:crm-api}
+    secret: ${CRM_SHOWCASE_JWT_SECRET}
+    issuer: orqestra-showcase
     expires-in-seconds: ${CRM_JWT_EXPIRES_IN_SECONDS:3600}
   bootstrap:
     admin:

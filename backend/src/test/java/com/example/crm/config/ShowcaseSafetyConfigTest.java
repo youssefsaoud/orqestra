@@ -8,6 +8,7 @@ import org.springframework.mock.env.MockEnvironment;
 class ShowcaseSafetyConfigTest {
     private MockEnvironment safe() {
         return new MockEnvironment().withProperty("spring.jpa.hibernate.ddl-auto", "validate")
+            .withProperty("crm.jwt.issuer", "orqestra-showcase")
             .withProperty("spring.datasource.hikari.connection-init-sql", "SET default_transaction_read_only = on");
     }
 
@@ -24,6 +25,8 @@ class ShowcaseSafetyConfigTest {
         assertThatThrownBy(() -> ShowcaseSafetyConfig.rejectShowcaseWriters(safe().withProperty("spring.jpa.hibernate.ddl-auto", "update"))
             .postProcessBeanFactory(new DefaultListableBeanFactory())).isInstanceOf(IllegalStateException.class);
         assertThatThrownBy(() -> ShowcaseSafetyConfig.rejectShowcaseWriters(safe().withProperty("spring.datasource.hikari.connection-init-sql", ""))
+            .postProcessBeanFactory(new DefaultListableBeanFactory())).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> ShowcaseSafetyConfig.rejectShowcaseWriters(safe().withProperty("crm.jwt.issuer", "crm-api"))
             .postProcessBeanFactory(new DefaultListableBeanFactory())).isInstanceOf(IllegalStateException.class);
     }
 }
