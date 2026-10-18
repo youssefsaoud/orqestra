@@ -7,10 +7,16 @@
 </section>
 
 <section class="pipeline-board" aria-label="Pipeline summary">
-  <article *ngFor="let stage of stages">
-    <h2>{{ label(stage) }}</h2>
-    <p *ngFor="let item of totalFor(stage)">{{ item.count }} · <app-money [amount]="item.totalAmount" [code]="item.currencyCode"></app-money></p>
-    <p *ngIf="totalFor(stage).length === 0">0 opportunities</p>
+  <article *ngFor="let stage of stages" [class]="'stage-' + stage" [attr.aria-labelledby]="'stage-' + stage">
+    <h2 class="stage-badge" [id]="'stage-' + stage">{{ label(stage) }}</h2>
+    <p class="pipeline-count"><strong>{{ countFor(stage) | number }}</strong><span>{{ countFor(stage) === 1 ? 'opportunity' : 'opportunities' }}</span></p>
+    <dl class="pipeline-totals" [attr.aria-label]="label(stage) + ' totals by currency'">
+      <div *ngFor="let item of totalFor(stage)">
+        <dt class="currency-code" [class.eur]="item.currencyCode === 'EUR'" [class.mad]="item.currencyCode === 'MAD'" [class.usd]="item.currencyCode === 'USD'">{{ item.currencyCode }}</dt>
+        <dd>{{ item.totalAmount | number:'1.2-2' }}</dd>
+      </div>
+      <div *ngIf="totalFor(stage).length === 0" class="pipeline-empty"><dt>No pipeline value</dt><dd>&ndash;</dd></div>
+    </dl>
   </article>
 </section>
 
@@ -21,7 +27,7 @@
   </label>
   <label>
     Stage
-    <select [formControl]="stageControl">
+    <select [class]="'stage-filter stage-' + stageControl.value" [formControl]="stageControl">
       <option value="">Any stage</option>
       <option *ngFor="let stage of stages" [value]="stage">{{ label(stage) }}</option>
     </select>
@@ -31,28 +37,28 @@
 <p *ngIf="error" class="error-message">{{ error }}</p>
 <p *ngIf="loading" class="muted">Loading opportunities...</p>
 
-<div class="table-shell" *ngIf="!loading && opportunities.length > 0; else emptyState">
-  <table>
+<div class="table-shell" role="region" aria-label="Opportunities table" tabindex="0" *ngIf="!loading && opportunities.length > 0; else emptyState">
+  <table class="opportunities-table">
     <thead>
       <tr>
         <th>Name</th>
         <th>Company</th>
         <th>Stage</th>
         <th>Owner</th>
-        <th>Amount</th>
+        <th class="amount-cell">Amount</th>
         <th>Close date</th>
-        <th></th>
+        <th><span class="sr-only">Actions</span></th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let opportunity of opportunities">
         <td><a [routerLink]="['/opportunities', opportunity.id]">{{ opportunity.name }}</a></td>
         <td>{{ opportunity.companyName }}</td>
-        <td><span class="pill">{{ label(opportunity.stage) }}</span></td>
-        <td>{{ opportunity.ownerName || '-' }}</td>
-        <td><app-money [amount]="opportunity.amount" [code]="opportunity.currencyCode"></app-money></td>
-        <td>{{ opportunity.expectedCloseDate || '-' }}</td>
-        <td><a [routerLink]="['/opportunities', opportunity.id]">Open</a></td>
+        <td><span [class]="'stage-badge stage-' + opportunity.stage">{{ label(opportunity.stage) }}</span></td>
+        <td class="owner-cell">{{ opportunity.ownerName || '-' }}</td>
+        <td class="amount-cell"><app-money [amount]="opportunity.amount" [code]="opportunity.currencyCode"></app-money></td>
+        <td class="date-cell"><time *ngIf="opportunity.expectedCloseDate; else noCloseDate" [attr.datetime]="opportunity.expectedCloseDate">{{ opportunity.expectedCloseDate | date:'dd MMM yyyy' }}</time><ng-template #noCloseDate>-</ng-template></td>
+        <td class="action-cell"><a [routerLink]="['/opportunities', opportunity.id]" [attr.aria-label]="'View ' + opportunity.name">View</a></td>
       </tr>
     </tbody>
   </table>

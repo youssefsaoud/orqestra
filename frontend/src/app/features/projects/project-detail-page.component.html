@@ -35,13 +35,13 @@
         <article class="project-card project-summary">
           <div class="summary-top">
             <span class="status" [class]="'status ' + item.status.toLowerCase()">{{ statusLabel(item.status) }}</span>
-            <span class="project-muted">Updated {{ item.updatedAt | date:'mediumDate' }}</span>
+            <span class="project-muted">Updated {{ item.updatedAt | date:'dd MMM yyyy' }}</span>
           </div>
           <dl>
             <div><dt>Client</dt><dd>{{ item.clientName }}</dd></div>
             <div><dt>Category</dt><dd>{{ item.category || 'Not specified' }}</dd></div>
             <div><dt>Location</dt><dd>{{ item.location || 'Not specified' }}</dd></div>
-            <div><dt>Deadline</dt><dd>{{ item.deadline ? (item.deadline | date:'mediumDate') : 'No deadline' }}</dd></div>
+            <div><dt>Deadline</dt><dd>{{ item.deadline ? (item.deadline | date:'dd MMM yyyy') : 'No deadline' }}</dd></div>
             <div><dt>Estimated budget</dt><dd><app-money [amount]="item.estimatedBudget" [code]="item.currencyCode" empty="Not specified"></app-money></dd></div>
             <div><dt>Assigned associate</dt><dd>{{ item.assignedAssociateName || 'Unassigned' }}</dd></div>
           </dl>
@@ -119,8 +119,8 @@
               </div>
 
               <div class="vendor-meta">
-                <span><small>Last contact</small>{{ vendor.lastContactDate ? (vendor.lastContactDate | date:'mediumDate') : 'Not recorded' }}</span>
-                <span class="follow-up" [class.overdue]="isOverdue(vendor)"><small>Next follow-up</small>{{ vendor.nextFollowUpDate ? (vendor.nextFollowUpDate | date:'mediumDate') : 'Not scheduled' }}</span>
+                <span><small>Last contact</small>{{ vendor.lastContactDate ? (vendor.lastContactDate | date:'dd MMM yyyy') : 'Not recorded' }}</span>
+                <span class="follow-up" [class.overdue]="isOverdue(vendor)"><small>Next follow-up</small>{{ vendor.nextFollowUpDate ? (vendor.nextFollowUpDate | date:'dd MMM yyyy') : 'Not scheduled' }}</span>
                 <span><small>Quotations</small>{{ quotesFor(vendor.id).length }} revisions</span>
                 <span class="vendor-notes"><small>Notes</small>{{ vendor.notes || 'No notes' }}</span>
               </div>
@@ -172,7 +172,7 @@
             <span>Selected quotation</span>
             <strong>{{ selected.vendorName }}</strong>
             <b><app-money [amount]="selected.amount" [code]="selected.currencyCode"></app-money></b>
-            <small>Revision {{ selected.revisionNumber }} · received {{ selected.receivedDate | date:'mediumDate' }}</small>
+            <small>Revision {{ selected.revisionNumber }} · received {{ selected.receivedDate | date:'dd MMM yyyy' }}</small>
           </div>
 
           <p *ngIf="quoteError" class="project-error">{{ quoteError }}</p>
@@ -183,8 +183,8 @@
                 <tr *ngFor="let quote of allQuotations" [class.selected-row]="quote.selected">
                   <td><strong>{{ quote.vendorName }}</strong><small>Revision {{ quote.revisionNumber }}</small></td>
                   <td><app-money [amount]="quote.amount" [code]="quote.currencyCode"></app-money></td>
-                  <td>{{ quote.receivedDate | date:'mediumDate' }}</td>
-                  <td>{{ quote.validUntil ? (quote.validUntil | date:'mediumDate') : 'Not set' }}</td>
+                  <td>{{ quote.receivedDate | date:'dd MMM yyyy' }}</td>
+                  <td>{{ quote.validUntil ? (quote.validUntil | date:'dd MMM yyyy') : 'Not set' }}</td>
                   <td><span class="status" [class.selected]="quote.selected">{{ quoteStatusLabel(quote.status) }}</span></td>
                   <td><button data-showcase-action type="button" class="secondary-button" [disabled]="!canManage(user.role) || quote.selected" (click)="selectQuote(quote)">{{ quote.selected ? 'Selected' : 'Select' }}</button></td>
                 </tr>
@@ -238,7 +238,7 @@
           <button type="button" class="document-row" *ngFor="let document of documents" (click)="downloadDocument(document)">
             <span class="document-icon" aria-hidden="true">DOC</span>
             <span><strong>{{ document.originalFilename }}</strong><small>{{ document.contentType }} · {{ document.fileSize | number }} bytes</small></span>
-            <span class="project-muted">{{ document.uploadedAt | date:'mediumDate' }}</span>
+            <span class="project-muted">{{ document.uploadedAt | date:'dd MMM yyyy' }}</span>
           </button>
         </div>
         <ng-template #noDocuments><div class="inline-empty"><strong>No project documents</strong><span>Upload a scope of work or supporting project file.</span></div></ng-template>

@@ -1,1 +1,117 @@
-.entity-header>div::after{content:"Commercial opportunities organized by sales stage and expected close date.";display:block;margin-top:.45rem;color:var(--color-text-secondary);font-size:var(--text-md)}.pipeline-board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.5rem;margin-bottom:1rem}.pipeline-board article{min-width:0;padding:.85rem;border:1px solid var(--color-border);border-radius:var(--radius-lg);background:var(--color-surface)}.pipeline-board h2{margin:0 0 .55rem;color:var(--color-text-secondary);font-size:var(--text-xs)}.pipeline-board p{margin:.2rem 0;color:var(--color-text-tertiary);font-size:var(--text-xs);overflow-wrap:anywhere}.toolbar label{min-width:min(100%,14rem)}.table-shell table{min-width:64rem}.table-shell td{font-size:var(--text-sm)}.table-shell td:first-child a{color:var(--color-text);font-weight:650}.table-shell td:last-child{text-align:right}.table-shell td:last-child a{font-weight:650}@media(max-width:1100px){.pipeline-board{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.entity-header{align-items:stretch}.entity-header .primary-link{width:100%}.pipeline-board{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:430px){.pipeline-board{grid-template-columns:1fr}}
+.entity-header > div::after {
+  content: 'Commercial opportunities organized by sales stage and expected close date.';
+  display: block;
+  margin-top: .45rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-md);
+}
+
+.pipeline-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+
+.pipeline-board article {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 12.5rem;
+  padding: 1rem 1.125rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.pipeline-board h2 {
+  margin: 0 0 .75rem;
+  color: var(--stage-color, var(--color-text-secondary));
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.pipeline-count {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin: 0 0 1rem;
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+}
+
+.pipeline-count strong {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 650;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.pipeline-totals {
+  display: grid;
+  align-content: start;
+  gap: .5rem;
+  min-height: 5rem;
+  margin: auto 0 0;
+  padding-top: .75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.pipeline-totals > div {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: .75rem;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.pipeline-totals dd {
+  margin: 0;
+  color: var(--color-text);
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.pipeline-empty { color: var(--color-text-secondary); }
+.pipeline-empty dd { color: var(--color-text-secondary); }
+.toolbar label { min-width: min(100%, 14rem); }
+
+.table-shell { position: relative; max-width: 100%; overflow-x: auto; }
+.opportunities-table { width: 100%; min-width: 78rem; }
+.opportunities-table td { padding-block: 1rem; vertical-align: middle; font-size: var(--text-sm); }
+.opportunities-table th:first-child { min-width: 20rem; }
+.opportunities-table th:nth-child(2) { min-width: 15rem; }
+.opportunities-table th:nth-child(3) { min-width: 9rem; }
+.opportunities-table th:nth-child(4) { min-width: 11rem; }
+.opportunities-table th:nth-child(5) { min-width: 11rem; }
+.opportunities-table th:nth-child(6) { min-width: 9rem; }
+.opportunities-table td:first-child a { color: var(--color-text); font-weight: 650; }
+.opportunities-table .owner-cell,
+.opportunities-table .date-cell,
+.opportunities-table .action-cell,
+.opportunities-table .amount-cell { white-space: nowrap; }
+.opportunities-table .amount-cell { text-align: right; font-variant-numeric: tabular-nums; }
+.opportunities-table app-money { min-width: max-content; }
+.opportunities-table .action-cell { text-align: right; }
+.opportunities-table .action-cell a { font-weight: 650; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+@media (min-width: 1900px) {
+  .pipeline-board { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .pipeline-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 550px) {
+  .entity-header { align-items: stretch; }
+  .entity-header .primary-link { width: 100%; }
+  .pipeline-board { grid-template-columns: 1fr; }
+}

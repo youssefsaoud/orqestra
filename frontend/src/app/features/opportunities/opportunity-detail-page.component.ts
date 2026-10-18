@@ -28,6 +28,7 @@ export class OpportunityDetailPageComponent implements OnInit {
   changeOwner(): void { if (!this.opportunity || !this.ownerControl.value.trim()) { return; } this.opportunityService.changeOwner(this.opportunity.id, this.ownerControl.value.trim()).subscribe({ next: (opportunity) => this.apply(opportunity), error: (error) => this.error = apiErrorMessage(error, 'Owner could not be changed.') }); }
   deleteOpportunity(): void { if (!this.opportunity || !confirm('Delete this opportunity?')) { return; } this.opportunityService.delete(this.opportunity.id).subscribe({ next: () => this.router.navigateByUrl('/opportunities'), error: (error) => this.error = apiErrorMessage(error, 'Opportunity could not be deleted.') }); }
   canManage(role: string): boolean { return role === 'ADMIN' || role === 'MANAGER'; }
+  stageLabel(stage: string): string { return stage.toLowerCase().replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase()); }
 
   private load(id: string): void { this.loading = true; this.error = ''; this.opportunityService.get(id).subscribe({ next: (opportunity) => { this.apply(opportunity); this.loading = false; }, error: (error) => { this.error = apiErrorMessage(error, 'Opportunity not found.'); this.loading = false; } }); }
   private apply(opportunity: Opportunity): void { this.opportunity = opportunity; this.stageControl.setValue(opportunity.stage, { emitEvent: false }); this.ownerControl.setValue(opportunity.ownerUserId ?? '', { emitEvent: false }); }
