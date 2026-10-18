@@ -63,7 +63,14 @@ export class OpportunitiesPageComponent implements OnInit {
   previousPage(): void { if (this.page > 0) { this.page -= 1; this.load(); } }
 
   totalFor(stage: OpportunityStage): PipelineSummary[] {
-    return this.summary.filter((item) => item.stage === stage);
+    const order = ['EUR', 'USD', 'MAD'];
+    const rank = (code: string) => order.includes(code) ? order.indexOf(code) : order.length;
+    return this.summary.filter((item) => item.stage === stage)
+      .sort((a, b) => rank(a.currencyCode) - rank(b.currencyCode) || a.currencyCode.localeCompare(b.currencyCode));
+  }
+
+  countFor(stage: OpportunityStage): number {
+    return this.totalFor(stage).reduce((count, item) => count + item.count, 0);
   }
 
   label(value: string): string { return value.toLowerCase().replaceAll('_', ' ').replace(/\b\w/g, character => character.toUpperCase()); }

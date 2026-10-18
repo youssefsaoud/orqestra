@@ -16,16 +16,16 @@
 <p *ngIf="loading" class="muted">Loading {{ heading.toLowerCase() }}...</p>
 
 <div class="table-shell" *ngIf="!loading && companies.length > 0; else emptyState">
-  <table>
-    <thead><tr><th>Organization</th><th>Roles</th><th>Industry</th><th>Primary contact</th><th>Phone</th><th></th></tr></thead>
+  <table [class.companies-directory-table]="!role">
+    <thead><tr><th>Organization</th><th>Roles</th><th>Industry</th><th>Primary contact</th><th>Phone</th><th aria-label="Actions"></th></tr></thead>
     <tbody>
       <tr *ngFor="let company of companies">
         <td><a class="company-name" [routerLink]="['/companies', company.id]"><strong>{{ company.name }}</strong><small>{{ company.address || 'Address not specified' }}</small></a></td>
         <td><app-organization-relationships [roles]="company.roles" [relationships]="relationships.get(company.id)"></app-organization-relationships></td>
         <td>{{ company.industry || 'Not specified' }}</td>
-        <td><a *ngIf="company.email; else noEmail" [href]="'mailto:' + company.email">{{ company.email }}</a><ng-template #noEmail><span class="muted">Not provided</span></ng-template></td>
-        <td>{{ company.phone || 'Not provided' }}</td>
-        <td><a class="row-action" [routerLink]="['/companies', company.id]">Open</a></td>
+        <td class="email-cell"><a *ngIf="company.email; else noEmail" [href]="'mailto:' + company.email">{{ company.email }}</a><ng-template #noEmail><span class="muted">Not provided</span></ng-template></td>
+        <td class="phone-cell">{{ company.phone || 'Not provided' }}</td>
+        <td class="action-cell"><a class="row-action" [routerLink]="['/companies', company.id]">Open</a></td>
       </tr>
     </tbody>
   </table>
