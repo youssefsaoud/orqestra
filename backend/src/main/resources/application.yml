@@ -21,6 +21,8 @@ spring:
   profiles:
     default: dev
   datasource:
+    hikari:
+      connection-init-sql: SET default_transaction_read_only = on
     url: ${CRM_DB_URL:jdbc:postgresql://localhost:5432/crm_dev}
     username: ${CRM_DB_USERNAME:crm_app}
     password: ${CRM_DB_PASSWORD:crm_app_password}
@@ -29,7 +31,7 @@ spring:
       ddl-auto: validate
     open-in-view: false
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
 
 springdoc:

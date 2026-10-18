@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new com.example.crm.security.ShowcaseReadOnlyFilter(), JwtAuthenticationFilter.class)
             .build();
     }
     @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }

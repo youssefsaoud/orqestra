@@ -1,0 +1,22 @@
+spring:
+  config:
+    activate:
+      on-profile: showcase
+  flyway:
+    enabled: false
+server:
+  address: 127.0.0.1
+  port: 8082
+crm:
+  cors:
+    allowed-origin: http://localhost:4300
+  bootstrap:
+    admin:
+      enabled: false
+  demo:
+    seed:
+      enabled: false
+  recruiter-demo:
+    enabled: false
+  invitations:
+    preview-enabled: false
