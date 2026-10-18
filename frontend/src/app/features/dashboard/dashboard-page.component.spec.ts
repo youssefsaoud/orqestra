@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { CurrentUser, UserRole } from '../../core/auth/auth.models';
@@ -90,6 +90,31 @@ describe('DashboardPageComponent', () => {
     const fixture = createFixture();
 
     expect(fixture.componentInstance.error).toContain('could not be loaded');
+  });
+
+  it('renders aligned currency rows without adding different currencies together', () => {
+    const data=analytics('ADMIN');
+    data.quotationValueByCurrency=[{currencyCode:'EUR',amount:500},{currencyCode:'MAD',amount:7500},{currencyCode:'USD',amount:17200}];
+    dashboardService.projectAnalytics.and.returnValue(of(data));
+    const fixture=createFixture();
+    expect(fixture.nativeElement.querySelectorAll('.quotation-currencies > div').length).toBe(3);
+    fixture.componentInstance.selectCurrency('USD');fixture.detectChanges();
+    const rows=fixture.nativeElement.querySelectorAll('.quotation-currencies > div');
+    expect(rows.length).toBe(1);expect(rows[0].textContent).toContain('USD');expect(rows[0].textContent).toContain('17,200.00');
+  });
+
+  it('cancels superseded analytics requests and ignores their late responses', () => {
+    const first=new Subject<ProjectDashboardAnalytics>();
+    const second=new Subject<ProjectDashboardAnalytics>();
+    const cancelled=jasmine.createSpy('cancelled');
+    dashboardService.projectAnalytics.and.returnValues(new Observable(subscriber=>{
+      const subscription=first.subscribe(subscriber);return ()=>{cancelled();subscription.unsubscribe();};
+    }),second);
+    const fixture=createFixture();
+    fixture.componentInstance.selectDateRange('THIS_YEAR');expect(cancelled).toHaveBeenCalled();
+    const current=analytics('ADMIN');current.totalProjects=7;second.next(current);
+    first.next(analytics('ADMIN'));expect(fixture.componentInstance.analytics?.totalProjects).toBe(7);
+    fixture.destroy();expect(second.observed).toBeFalse();
   });
 
   function createFixture(): ComponentFixture<DashboardPageComponent> {

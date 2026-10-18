@@ -32,7 +32,7 @@
 <section class="analytics-workspace" *ngIf="analytics as data">
   <div class="scope-bar">
     <span><strong>{{ data.totalProjects | number }}</strong> projects in scope · <strong>{{ data.completedProjects | number }}</strong> completed</span>
-    <span>Trend charts: {{ data.trendStartDate | date:'mediumDate' }}–{{ data.trendEndDate | date:'mediumDate' }}</span>
+    <span>Trend charts: {{ data.trendStartDate | date:'dd MMM yyyy' }}–{{ data.trendEndDate | date:'dd MMM yyyy' }}</span>
   </div>
 
   <div class="kpi-grid" aria-label="Project operations metrics">
@@ -113,7 +113,7 @@
     </div>
     <div>
       <span>Active quotation value</span>
-      <strong class="financial-totals"><app-money *ngFor="let total of currencyTotals(data.quotationValueByCurrency)" [amount]="total.amount" [code]="total.currencyCode"></app-money><span *ngIf="!currencyTotals(data.quotationValueByCurrency).length">No recorded value</span></strong>
+      <dl class="quotation-currencies"><div *ngFor="let total of currencyTotals(data.quotationValueByCurrency)"><dt class="currency-code" [class.eur]="total.currencyCode === 'EUR'" [class.mad]="total.currencyCode === 'MAD'" [class.usd]="total.currencyCode === 'USD'">{{ total.currencyCode }}</dt><dd>{{ total.amount | number:'1.2-2' }}</dd></div></dl><span *ngIf="!currencyTotals(data.quotationValueByCurrency).length">No recorded value</span>
       <small>Different currencies are never combined.</small>
     </div>
     <div class="currency-filter" aria-label="Quotation currency">
@@ -130,7 +130,7 @@
     <ul class="activity-feed" *ngIf="projectData.recentActivities.length > 0; else noProjectActivity">
       <li *ngFor="let activity of projectData.recentActivities | slice:0:6">
         <span class="activity-marker" aria-hidden="true"></span>
-        <div><a [routerLink]="projectActivityLink(activity)">{{ activity.subject }}</a><span>{{ statusLabel(activity.type) }} · {{ activity.authorName }} · {{ activity.occurredAt | date:'mediumDate' }}</span></div>
+        <div><a [routerLink]="projectActivityLink(activity)">{{ activity.subject }}</a><span>{{ statusLabel(activity.type) }} · {{ activity.authorName }} · {{ activity.occurredAt | date:'dd MMM yyyy' }}</span></div>
         <small>{{ activity.vendorName || activity.projectName }}</small>
       </li>
     </ul>
