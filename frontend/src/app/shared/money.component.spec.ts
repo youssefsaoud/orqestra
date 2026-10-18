@@ -12,6 +12,7 @@ describe('MoneyComponent', () => {
       expect(badge.textContent).toBe(code);
       expect(badge.classList.contains('eur')).toBe(code === 'EUR');
       expect(badge.classList.contains('mad')).toBe(code === 'MAD');
+      expect(badge.classList.contains('usd')).toBe(code === 'USD');
     }
     fixture.componentInstance.amount = null; fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.currency')).toBeNull();

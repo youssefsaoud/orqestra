@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } fro
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../core/auth/auth.service';
+import { ResponsiveTablesDirective } from '../shared/responsive-tables.directive';
 
 interface NavItem {
   label: string;
@@ -20,7 +21,7 @@ interface NavGroup {
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [AsyncPipe, NgFor, NgIf, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [AsyncPipe, NgFor, NgIf, RouterLink, RouterLinkActive, RouterOutlet, ResponsiveTablesDirective],
   templateUrl: './app-shell.component.html',
   styleUrls: ['./app-shell.component.css']
 })
