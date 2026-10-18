@@ -6,10 +6,10 @@ spring:
   application:
     name: crm-api
   mail:
-    host: smtp.gmail.com
+    host: 127.0.0.1
     port: 587
-    username: ${SMTP_USERNAME:}
-    password: ${SMTP_PASSWORD:}
+    username: ""
+    password: ""
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -19,13 +19,13 @@ spring:
       mail.smtp.timeout: 5000
       mail.smtp.writetimeout: 5000
   profiles:
-    default: dev
+    default: showcase
   datasource:
     hikari:
       connection-init-sql: SET default_transaction_read_only = on
-    url: ${CRM_DB_URL:jdbc:postgresql://localhost:5432/crm_dev}
-    username: ${CRM_DB_USERNAME:crm_app}
-    password: ${CRM_DB_PASSWORD:crm_app_password}
+    url: ${CRM_DB_URL}
+    username: ${CRM_DB_USERNAME}
+    password: ${CRM_DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -47,6 +47,10 @@ springdoc:
   override-with-generic-response: false
 
 server:
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
   tomcat:
     max-swallow-size: 12MB
   port: ${SERVER_PORT:8080}

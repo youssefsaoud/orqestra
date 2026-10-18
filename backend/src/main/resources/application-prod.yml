@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 10000
+server:
+  address: 0.0.0.0
+  port: ${PORT:${SERVER_PORT:8082}}
+  max-http-request-header-size: 8KB
+  tomcat:
+    threads:
+      max: 20
+      min-spare: 2
+    accept-count: 20
+    max-connections: 100
+    connection-timeout: 10s
+crm:
+  cors:
+    allowed-origin: ${CRM_CORS_ALLOWED_ORIGIN}
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

@@ -81,10 +81,10 @@ class RecruiterDemoTest {
             .extracting(ProjectDemoDataSeeder.ProjectSeed::reference).doesNotHaveDuplicates();
     }
 
-    @Test void ordinaryAuthenticationRejectsPublicDemoAccountsWithoutQueryingDatabase() {
+    @Test void showcaseAuthenticationRejectsPrivateDevelopmentAccountsWithoutQueryingDatabase() {
         var users = mock(UserRepository.class); var env = new MockEnvironment(); env.setActiveProfiles("prod");
-        var details = new CrmUserDetailsService(users, env);
-        assertThatThrownBy(() -> details.loadUserByUsername("admin@orqestra.demo")).isInstanceOf(UsernameNotFoundException.class);
+        var details = new CrmUserDetailsService(users);
+        assertThatThrownBy(() -> details.loadUserByUsername("admin@example.com")).isInstanceOf(UsernameNotFoundException.class);
         verifyNoInteractions(users);
     }
 }

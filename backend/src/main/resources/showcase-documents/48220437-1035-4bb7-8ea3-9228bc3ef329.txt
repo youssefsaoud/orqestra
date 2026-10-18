@@ -1,0 +1,4 @@
+Synthetic Orqestra demonstration document.
+Project: Regional branch network refresh
+Scope: Survey four branches, replace edge hardware, validate segmentation, and hand over network diagrams.
+Not a real client agreement.

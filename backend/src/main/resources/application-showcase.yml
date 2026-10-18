@@ -2,6 +2,9 @@ spring:
   config:
     activate:
       on-profile: showcase
+    import:
+      - optional:file:../.env.showcase.local[.properties]
+      - optional:file:.env.showcase.local[.properties]
   flyway:
     enabled: false
 server:

@@ -11,6 +11,13 @@ public class WebConfig implements WebMvcConfigurer {
     private final String allowedOrigin;
 
     public WebConfig(@Value("${crm.cors.allowed-origin:http://localhost:4200}") String allowedOrigin) {
+        java.net.URI origin = java.net.URI.create(allowedOrigin);
+        boolean local = java.util.Set.of("localhost", "127.0.0.1").contains(origin.getHost() == null ? "" : origin.getHost());
+        if (origin.getHost() == null || origin.getUserInfo() != null || origin.getQuery() != null
+            || origin.getFragment() != null || (origin.getPath() != null && !origin.getPath().isEmpty())
+            || !("https".equals(origin.getScheme()) || (local && "http".equals(origin.getScheme())))) {
+            throw new IllegalArgumentException("Configure one exact HTTPS frontend origin (HTTP is local-only)");
+        }
         this.allowedOrigin = allowedOrigin;
     }
 

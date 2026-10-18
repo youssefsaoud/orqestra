@@ -1,0 +1,4 @@
+Synthetic Orqestra demonstration document.
+Project: Hotel HVAC preventive maintenance
+Scope: Inspect air handlers, complete seasonal servicing, replace worn components, and document test results.
+Not a real client agreement.

@@ -84,8 +84,7 @@ public class ProjectDocumentService {
     public StoredDocument download(UUID id, CrmUserPrincipal principal) {
         ProjectDocument document = documentRepository.findWithDetailsById(id).orElseThrow(() -> new ResourceNotFoundException("Document not found"));
         visibleProject(document.getProject().getId(), principal);
-        Path path = storage.resolve(document.getStorageKey());
-        Resource resource = new FileSystemResource(path);
+        Resource resource = storage.resource(document.getStorageKey());
         if (!resource.exists() || !resource.isReadable()) throw new ResourceNotFoundException("Document file not found");
         return new StoredDocument(resource, document.getOriginalFilename(), document.getContentType());
     }

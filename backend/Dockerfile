@@ -14,5 +14,6 @@ COPY --from=build /workspace/target/*.jar /app/crm-api.jar
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN sed -i 's/\r$//' /app/docker-entrypoint.sh
 USER orqestra
+ENV SPRING_PROFILES_ACTIVE=prod
 EXPOSE 8080
 ENTRYPOINT ["sh", "/app/docker-entrypoint.sh"]
