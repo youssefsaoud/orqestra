@@ -349,4 +349,6 @@ Frontend coverage includes authentication routing, Admin-only navigation, invita
 
 ## Project Status
 
+**License: GNU AGPLv3. Copyright © 2026 Youssef Saoud. See LICENSE for terms.**
+
 Orqestra is an actively developed, functional portfolio project. Project/vendor workflows, operational analytics, and employee onboarding run locally with PostgreSQL persistence. Local development is the primary demonstration workflow.
