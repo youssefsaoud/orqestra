@@ -31,8 +31,8 @@ describe('DashboardPageComponent', () => {
 
     authService = jasmine.createSpyObj('AuthService', ['currentUser']);
     authService.currentUser.and.callFake((): CurrentUser => ({ id: 'user-1', fullName: 'Amina Haddad', email: 'amina@example.com', role: currentRole }));
-    userService = jasmine.createSpyObj('UserService', ['salesRepresentatives']);
-    userService.salesRepresentatives.and.returnValue(of([{ id: 'user-1', fullName: 'Amina Haddad', email: 'amina@example.com', role: 'SALES_REP' }]));
+    userService = jasmine.createSpyObj('UserService', ['dashboardAssociates']);
+    userService.dashboardAssociates.and.returnValue(of([{ id: 'user-1', fullName: 'Amina Haddad', active: true }]));
 
     await TestBed.configureTestingModule({
       imports: [DashboardPageComponent, RouterTestingModule],
@@ -79,7 +79,7 @@ describe('DashboardPageComponent', () => {
     dashboardService.projectAnalytics.and.returnValue(of(analytics('SALES_REP')));
     const fixture = createFixture();
 
-    expect(userService.salesRepresentatives).not.toHaveBeenCalled();
+    expect(userService.dashboardAssociates).not.toHaveBeenCalled();
     expect(fixture.nativeElement.querySelector('h1').textContent).toContain('My dashboard');
     expect(fixture.nativeElement.querySelectorAll('.compact-filter').length).toBe(1);
     expect(fixture.nativeElement.textContent).toContain('My workload');
@@ -90,6 +90,16 @@ describe('DashboardPageComponent', () => {
     const fixture = createFixture();
 
     expect(fixture.componentInstance.error).toContain('could not be loaded');
+  });
+
+  it('includes assigned inactive Associates and keeps currency totals separated', () => {
+    userService.dashboardAssociates.and.returnValue(of([{id:'inactive',fullName:'Nadia Benali',active:false}]));
+    const fixture=createFixture();
+    expect(fixture.nativeElement.textContent).toContain('Nadia Benali (inactive)');
+    fixture.componentInstance.selectCurrency('USD'); fixture.detectChanges();
+    const rows=fixture.nativeElement.querySelectorAll('.quotation-currencies > div');
+    expect(rows.length).toBe(1); expect(rows[0].textContent).toContain('USD');
+    expect(rows[0].textContent).toContain('17,200.00');
   });
 
   function createFixture(): ComponentFixture<DashboardPageComponent> {

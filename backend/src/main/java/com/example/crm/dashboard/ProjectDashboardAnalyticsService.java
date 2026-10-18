@@ -120,17 +120,20 @@ public class ProjectDashboardAnalyticsService {
             }
             return principal.id();
         }
-        if (requestedAssociateId != null) findActiveAssociate(requestedAssociateId);
+        if (requestedAssociateId != null) findDashboardAssociate(requestedAssociateId);
         return requestedAssociateId;
     }
 
     private String resolveAssociateName(CrmUserPrincipal principal, UUID associateId) {
-        return associateId.equals(principal.id()) ? principal.fullName() : findActiveAssociate(associateId).getFullName();
+        return associateId.equals(principal.id()) ? principal.fullName() : findDashboardAssociate(associateId).getFullName();
     }
 
-    private User findActiveAssociate(UUID associateId) {
+    private User findDashboardAssociate(UUID associateId) {
         User user = userRepository.findById(associateId).orElseThrow(() -> new ResourceNotFoundException("Associate not found"));
-        if (!user.isActive() || user.getRole() != Role.SALES_REP) throw new ResourceNotFoundException("Associate not found");
+        if (user.getRole() != Role.SALES_REP || (!user.isActive()
+            && !projectRepository.existsByAssignedAssociate_IdAndDeletedAtIsNull(associateId))) {
+            throw new ResourceNotFoundException("Associate not found");
+        }
         return user;
     }
 
@@ -188,8 +191,8 @@ public class ProjectDashboardAnalyticsService {
             return List.of(workload(principal.id(), principal.fullName(), projects, assignments, today));
         }
         associates = associateId == null
-            ? userRepository.findByRoleAndActiveTrueOrderByFullNameAsc(Role.SALES_REP)
-            : List.of(findActiveAssociate(associateId));
+            ? userRepository.findDashboardAssociates()
+            : List.of(findDashboardAssociate(associateId));
         List<AssociateWorkloadResponse> result = new ArrayList<>();
         for (User associate : associates) result.add(workload(associate.getId(), associate.getFullName(), projects, assignments, today));
         result.sort(Comparator.comparing(AssociateWorkloadResponse::activeProjects).reversed()

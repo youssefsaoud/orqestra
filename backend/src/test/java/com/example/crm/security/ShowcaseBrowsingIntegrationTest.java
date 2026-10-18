@@ -46,6 +46,21 @@ class ShowcaseBrowsingIntegrationTest {
         return "Bearer " + json.readTree(response).get("accessToken").asText();
     }
 
+    @Test void dashboardLookupIncludesAssignedInactiveStaffWithoutExposingItToAssociates() throws Exception {
+        for (String role : List.of("admin", "manager")) {
+            String bearer = login(role);
+            JsonNode associates = read("/api/v1/users/dashboard-associates", bearer);
+            assertThat(associates.size()).isEqualTo(3);
+            for (JsonNode associate : associates) {
+                JsonNode analytics = read("/api/v1/project-dashboard/analytics?range=ALL_TIME&associateId=" + associate.get("id").asText(), bearer);
+                assertThat(analytics.get("selectedAssociateId").asText()).isEqualTo(associate.get("id").asText());
+                assertThat(analytics.get("totalProjects").asInt()).isPositive();
+            }
+        }
+        mvc.perform(get("/api/v1/users/dashboard-associates").header("Authorization", login("associate")))
+            .andExpect(status().isForbidden());
+    }
+
     private JsonNode read(String path, String bearer) throws Exception {
         return json.readTree(mvc.perform(get(path).header("Authorization", bearer)).andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString());

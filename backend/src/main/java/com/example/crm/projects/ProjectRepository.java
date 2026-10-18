@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
+    boolean existsByAssignedAssociate_IdAndDeletedAtIsNull(UUID associateId);
     interface StatusCount { ProjectStatus getStatus(); long getCount(); }
 
     @Query("""

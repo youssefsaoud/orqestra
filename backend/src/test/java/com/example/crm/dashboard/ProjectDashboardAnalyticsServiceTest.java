@@ -65,7 +65,7 @@ class ProjectDashboardAnalyticsServiceTest {
         when(projectRepository.findVisibleForDashboard(userId, true, null)).thenReturn(List.of(activeProject, completedProject));
         when(projectVendorRepository.findVisibleForDashboard(userId, true, null)).thenReturn(List.of(firstAssignment, secondAssignment));
         when(quotationRepository.findVisibleForDashboard(userId, true, null)).thenReturn(List.of(firstRevision, secondRevision, euroQuote));
-        when(userRepository.findByRoleAndActiveTrueOrderByFullNameAsc(Role.SALES_REP)).thenReturn(List.of(associate));
+        when(userRepository.findDashboardAssociates()).thenReturn(List.of(associate));
 
         ProjectDashboardAnalyticsResponse result = service.analytics(principal, DashboardDateRange.LAST_30_DAYS, null);
 
@@ -128,6 +128,32 @@ class ProjectDashboardAnalyticsServiceTest {
         when(user.getId()).thenReturn(id);
         when(user.getFullName()).thenReturn(name);
         return user;
+    }
+
+    @Test
+    void managerCanFilterInactiveAssociateWithExistingAssignments() {
+        when(principal.role()).thenReturn(Role.MANAGER);
+        UUID inactiveId = UUID.randomUUID();
+        User user = associate(inactiveId, "Nadia Benali");
+        when(user.getRole()).thenReturn(Role.SALES_REP);
+        when(user.isActive()).thenReturn(false);
+        when(userRepository.findById(inactiveId)).thenReturn(java.util.Optional.of(user));
+        when(projectRepository.existsByAssignedAssociate_IdAndDeletedAtIsNull(inactiveId)).thenReturn(true);
+        ProjectDashboardAnalyticsResponse result = service.analytics(principal, DashboardDateRange.ALL_TIME, inactiveId);
+        assertThat(result.selectedAssociateId()).isEqualTo(inactiveId);
+        verify(projectRepository).findVisibleForDashboard(userId, true, inactiveId);
+    }
+
+    @Test
+    void inactiveUnassignedUserCannotBeUsedAsDashboardFilter() {
+        when(principal.role()).thenReturn(Role.ADMIN);
+        UUID inactiveId = UUID.randomUUID();
+        User user = mock(User.class);
+        when(user.getRole()).thenReturn(Role.SALES_REP);
+        when(userRepository.findById(inactiveId)).thenReturn(java.util.Optional.of(user));
+        assertThatThrownBy(() -> service.analytics(principal, DashboardDateRange.ALL_TIME, inactiveId))
+            .isInstanceOf(com.example.crm.common.web.ResourceNotFoundException.class);
+        verifyNoInteractions(projectVendorRepository, quotationRepository);
     }
 
     private Project project(ProjectStatus status, LocalDate deadline, User associate) {

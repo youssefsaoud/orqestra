@@ -1,11 +1,12 @@
 import { MoneyComponent } from '../../shared/money.component';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import type { EChartsOption } from 'echarts';
 
 import { AuthService } from '../../core/auth/auth.service';
-import { UserSummary } from '../../core/users/user.models';
+import { DashboardAssociate } from '../../core/users/user.models';
 import { UserService } from '../../core/users/user.service';
 import { DashboardChartComponent, DashboardChartSelection } from './dashboard-chart.component';
 import {
@@ -33,7 +34,9 @@ interface PipelineStageView {
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.css']
 })
-export class DashboardPageComponent implements OnInit {
+export class DashboardPageComponent implements OnInit, OnDestroy {
+  private analyticsRequest?: Subscription;
+  private readonly subscriptions = new Subscription();
   readonly dateRanges: { value: DashboardDateRange; label: string }[] = [
     { value: 'LAST_30_DAYS', label: 'Last 30 days' },
     { value: 'LAST_90_DAYS', label: 'Last 90 days' },
@@ -46,7 +49,7 @@ export class DashboardPageComponent implements OnInit {
   summary: DashboardSummary | null = null;
   pipeline: PipelineStageSummary[] = [];
   activities: RecentActivity[] = [];
-  associates: UserSummary[] = [];
+  associates: DashboardAssociate[] = [];
   selectedDateRange: DashboardDateRange = 'LAST_90_DAYS';
   selectedAssociateId = '';
   selectedCurrency = 'ALL';
@@ -120,7 +123,7 @@ export class DashboardPageComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.canFilterAssociates) {
-      this.userService.salesRepresentatives().subscribe({ next: associates => this.associates = associates, error: () => this.associates = [] });
+      this.subscriptions.add(this.userService.dashboardAssociates().subscribe({ next: associates => this.associates = associates, error: () => this.associates = [] }));
     }
     this.load();
   }
@@ -189,15 +192,17 @@ export class DashboardPageComponent implements OnInit {
   }
 
   private loadAnalytics(): void {
+    this.analyticsRequest?.unsubscribe();
     this.loading = true;
     this.error = '';
-    this.dashboardService.projectAnalytics(this.selectedDateRange, this.selectedAssociateId || undefined).subscribe({
+    this.analyticsRequest = this.dashboardService.projectAnalytics(this.selectedDateRange, this.selectedAssociateId || undefined).subscribe({
       next: analytics => {
         this.analytics = analytics;
         this.buildCharts(analytics);
         this.loading = false;
       },
       error: () => {
+        this.analytics = null;
         this.error = 'Operational analytics could not be loaded.';
         this.loading = false;
       }
@@ -205,11 +210,13 @@ export class DashboardPageComponent implements OnInit {
   }
 
   private loadSupportingData(): void {
-    this.dashboardService.projectSummary().subscribe({ next: summary => this.projectSummary = summary, error: () => this.projectSummary = null });
-    this.dashboardService.summary().subscribe({ next: summary => this.summary = summary, error: () => this.summary = null });
-    this.dashboardService.pipeline().subscribe({ next: pipeline => this.pipeline = pipeline, error: () => this.pipeline = [] });
-    this.dashboardService.recentActivities(10).subscribe({ next: activities => this.activities = activities, error: () => this.activities = [] });
+    this.subscriptions.add(this.dashboardService.projectSummary().subscribe({ next: summary => this.projectSummary = summary, error: () => this.projectSummary = null }));
+    this.subscriptions.add(this.dashboardService.summary().subscribe({ next: summary => this.summary = summary, error: () => this.summary = null }));
+    this.subscriptions.add(this.dashboardService.pipeline().subscribe({ next: pipeline => this.pipeline = pipeline, error: () => this.pipeline = [] }));
+    this.subscriptions.add(this.dashboardService.recentActivities(10).subscribe({ next: activities => this.activities = activities, error: () => this.activities = [] }));
   }
+
+  ngOnDestroy(): void { this.analyticsRequest?.unsubscribe(); this.subscriptions.unsubscribe(); }
 
   private buildCharts(data: ProjectDashboardAnalytics): void {
     const projectColors = ['#4b9bff', '#75b6ff', '#e9b75f', '#46c98a', '#ff7285'];

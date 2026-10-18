@@ -22,4 +22,11 @@ public class UserLookupController {
             .map(UserSummaryResponse::from)
             .toList();
     }
+
+    @GetMapping("/dashboard-associates")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    List<DashboardAssociateResponse> dashboardAssociates() {
+        return userRepository.findDashboardAssociates().stream()
+            .map(user -> new DashboardAssociateResponse(user.getId(), user.getFullName(), user.isActive())).toList();
+    }
 }
