@@ -65,7 +65,26 @@
         </button>
       </form>
 
-      <p class="access-note">Access is limited to authorized team members.</p>
+      <section class="demo-accounts" aria-labelledby="demo-heading">
+        <h3 id="demo-heading">Explore with a demo account</h3>
+        <p>Choose a role and use the credentials below to sign in.</p>
+        <fieldset class="demo-roles">
+          <legend class="visually-hidden">Demo account role</legend>
+          <label *ngFor="let role of demoRoles" [class.selected]="selectedDemoRole === role">
+            <input type="radio" name="demo-role" [value]="role.label" [checked]="selectedDemoRole === role" (change)="selectDemoRole(role)">
+            <span>{{ role.label }}</span>
+          </label>
+        </fieldset>
+        <div class="demo-credential">
+          <div><span>Email</span><code>{{ selectedDemoRole.email }}</code></div>
+          <button type="button" class="copy-credential" aria-label="Copy demo email" title="Copy email" (click)="copyDemoValue('email')"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg></button>
+        </div>
+        <div class="demo-credential">
+          <div><span>Password</span><code>{{ demoPassword }}</code></div>
+          <button type="button" class="copy-credential" aria-label="Copy demo password" title="Copy password" (click)="copyDemoValue('password')"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"></path></svg></button>
+        </div>
+        <p class="copy-status" role="status">{{ copyMessage }}</p>
+      </section>
     </section>
   </main>
 </section>

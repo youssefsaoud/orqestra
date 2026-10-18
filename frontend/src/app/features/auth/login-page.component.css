@@ -119,3 +119,20 @@
 @media(prefers-reduced-motion:reduce){.login-card::before,.login-card::after{display:none}
 .login-card{transition:none}
 }
+.demo-accounts{margin-top:1.25rem;padding-top:1rem;border-top:1px solid rgba(135,148,172,.2)}
+.demo-accounts h3{font-family:var(--font-display);font-size:.9rem;font-weight:600;margin:0 0 .35rem}
+.demo-accounts>p{font-size:.73rem;line-height:1.5;color:#a1a1aa;margin:0 0 .75rem}
+.demo-roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin:0 0 .7rem;padding:3px;background:#11141b;border:1px solid #2a2d35;border-radius:6px}
+.demo-roles label{position:relative;display:grid;place-items:center;min-height:32px;margin:0;border-radius:4px;color:#a1a1aa;font-size:.75rem;cursor:pointer}
+.demo-roles label.selected{background:#23354d;color:#dcecff}
+.demo-roles label:focus-within{outline:2px solid #76b5ff;outline-offset:1px}
+.demo-roles input,.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;padding:0!important;margin:-1px!important;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0!important}
+.demo-credential{display:grid;grid-template-columns:minmax(0,1fr) 32px;gap:.5rem;align-items:center;padding:.35rem 0}
+.demo-credential>div{min-width:0;display:grid;gap:.15rem}
+.demo-credential span{font-size:.67rem;color:#a1a1aa}
+.demo-credential code{font-family:var(--font-mono);font-size:.76rem;color:#dce4ee;overflow-wrap:anywhere;user-select:text;background:transparent;padding:0}
+.demo-accounts .copy-credential{width:32px;min-height:32px;height:32px;padding:7px;margin:0;justify-content:center;background:transparent;border:1px solid #303641;box-shadow:none;color:#a9bed8}
+.demo-accounts .copy-credential:hover{background:#23354d;box-shadow:none;color:#fff}
+.demo-accounts .copy-credential svg{width:16px;height:16px}
+.demo-accounts .copy-status{min-height:1.1rem;margin:.35rem 0 0;font-size:.7rem;color:#90c2ff}
+@media(min-width:761px){.login-panel{padding-block:2rem}.login-heading{margin-bottom:1.5rem}}

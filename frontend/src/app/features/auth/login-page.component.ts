@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,7 +9,7 @@ import { OrchestrationScene } from './orchestration-scene';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [NgIf, ReactiveFormsModule],
+  imports: [NgFor, NgIf, ReactiveFormsModule],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
 })
@@ -24,6 +24,28 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
   });
   loading = false;
   errorMessage = '';
+  readonly demoRoles = [
+    { label: 'Admin', email: 'admin@orqestra.demo' },
+    { label: 'Manager', email: 'manager@orqestra.demo' },
+    { label: 'Associate', email: 'associate@orqestra.demo' }
+  ];
+  readonly demoPassword = 'OrqestraDemo2026!';
+  selectedDemoRole = this.demoRoles[0];
+  copyMessage = '';
+
+  selectDemoRole(role: typeof this.demoRoles[number]): void {
+    this.selectedDemoRole = role;
+    this.copyMessage = '';
+  }
+
+  async copyDemoValue(field: 'email' | 'password'): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(field === 'email' ? this.selectedDemoRole.email : this.demoPassword);
+      this.copyMessage = field === 'email' ? 'Email copied.' : 'Password copied.';
+    } catch {
+      this.copyMessage = 'Copy unavailable. Select the credential text to copy it.';
+    }
+  }
 
   private scene?: OrchestrationScene;
   private spotlightFrameId: number | null = null;
@@ -68,9 +90,11 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
     this.errorMessage = '';
     this.authService.login(this.form.getRawValue()).subscribe({
       next: () => void this.router.navigateByUrl('/dashboard'),
-      error: () => {
+      error: (error: { status?: number }) => {
         this.loading = false;
-        this.errorMessage = 'Invalid email or password.';
+        this.errorMessage = error?.status === 0 || (error?.status ?? 0) >= 500
+          ? 'The showcase service is unavailable. Please try again shortly.'
+          : 'Invalid email or password.';
       }
     });
   }
