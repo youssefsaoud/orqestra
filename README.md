@@ -8,6 +8,12 @@
 
 A full-stack B2B workspace for coordinating client projects, vendor outreach, quotations, documents, and employee responsibilities. Built with Spring Boot, Angular, and PostgreSQL, with server-side authorization throughout the project workflow.
 
+## Live Demo
+
+**[Launch Live Demo](https://orqestra-showcase.pages.dev)**
+
+Explore the public **read-only showcase**. Admin, Manager, and Associate demo credentials are displayed on the login page.
+
 ### Interactive Login Experience
 
 ![Orqestra login with an animated Three.js background and cursor-reactive glass form glow](assets/screenshots/login-animation.gif)
@@ -20,7 +26,9 @@ An immersive login experience featuring a Three.js animated background, responsi
 
 Real-time operational insights into projects, vendor outreach, quotations, and team workloads, with role-based access controls.
 
-## Try Orqestra Locally
+## Run the Full Version Locally (Docker)
+
+Run the **full, locally editable application** from the `main` branch with Docker to create, edit, and manage records.
 
 Only **Docker Desktop with Linux containers and Compose v2.24+** is required. No local Java, Node.js, PostgreSQL, or Gmail account is needed.
 
