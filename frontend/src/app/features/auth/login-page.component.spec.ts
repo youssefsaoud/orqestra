@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
+import { BackendStatusService } from '../../core/api/backend-status.service';
 import { LoginPageComponent } from './login-page.component';
 
 describe('LoginPageComponent', () => {
@@ -16,7 +17,7 @@ describe('LoginPageComponent', () => {
     authService = jasmine.createSpyObj<AuthService>('AuthService', ['login']);
     await TestBed.configureTestingModule({
       imports: [LoginPageComponent, RouterTestingModule],
-      providers: [{ provide: AuthService, useValue: authService }]
+      providers: [{ provide: AuthService, useValue: authService }, { provide: BackendStatusService, useValue: { state: 'ready', state$: of('ready'), monitor: () => () => {}, whenReady: () => of(true) } }]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginPageComponent);
@@ -83,5 +84,28 @@ describe('LoginPageComponent', () => {
     card.dispatchEvent(new PointerEvent('pointerleave', { pointerType: 'mouse' }));
 
     expect(card.style.getPropertyValue('--card-glow-opacity')).toBe('0');
+  });
+
+  it('waits for health before sending credentials and prevents duplicate submissions', () => {
+    const ready = new Subject<boolean>();
+    const backend = TestBed.inject(BackendStatusService);
+    spyOn(backend, 'whenReady').and.returnValue(ready);
+    spyOn(router, 'navigateByUrl').and.resolveTo(true);
+    authService.login.and.returnValue(of({id:'user',fullName:'Admin',email:'admin@example.test',role:'ADMIN'}));
+    component.form.setValue({email:'admin@example.test',password:'password'});
+    component.submit(); component.submit();
+    expect(authService.login).not.toHaveBeenCalled();
+    ready.next(true); ready.complete();
+    expect(authService.login).toHaveBeenCalledTimes(1);
+  });
+
+  it('cancels waiting without sending or retaining the password', () => {
+    const ready = new Subject<boolean>();
+    spyOn(TestBed.inject(BackendStatusService), 'whenReady').and.returnValue(ready);
+    component.form.setValue({email:'admin@example.test',password:'password'});
+    component.submit(); component.cancelPendingLogin(); ready.next(true);
+    expect(authService.login).not.toHaveBeenCalled();
+    expect(component.form.controls.password.value).toBe('');
+    expect(component.loading).toBeFalse();
   });
 });

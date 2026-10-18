@@ -18,7 +18,7 @@
             "main": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets", { "glob": "_redirects", "input": "src", "output": "/" }, { "glob": "_headers", "input": "src", "output": "/" }],
+            "assets": ["src/favicon.ico", "src/assets", { "glob": "_headers", "input": "src", "output": "/" }],
             "styles": ["src/styles.css"],
             "scripts": []
           },

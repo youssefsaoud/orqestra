@@ -136,3 +136,5 @@
 .demo-accounts .copy-credential svg{width:16px;height:16px}
 .demo-accounts .copy-status{min-height:1.1rem;margin:.35rem 0 0;font-size:.7rem;color:#90c2ff}
 @media(min-width:761px){.login-panel{padding-block:2rem}.login-heading{margin-bottom:1.5rem}}
+.login-api-readiness{margin:0 0 1rem;padding:.7rem .85rem;border:1px solid var(--color-border);border-radius:6px;background:rgba(23,25,31,.65)}
+.login-api-readiness p{margin:.45rem 0 0;font-size:.75rem;line-height:1.6;color:var(--color-text-secondary)}

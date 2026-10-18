@@ -1,5 +1,9 @@
 import { NgFor, NgIf } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subscription, TimeoutError, switchMap, throwError, timeout } from 'rxjs';
+import { BackendStatusService } from '../../core/api/backend-status.service';
+import { BackendStatusComponent } from '../../core/api/backend-status.component';
+import { BackendWaitDialogComponent } from '../../core/api/backend-wait-dialog.component';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -9,11 +13,11 @@ import { OrchestrationScene } from './orchestration-scene';
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [NgFor, NgIf, ReactiveFormsModule],
+  imports: [NgFor, NgIf, ReactiveFormsModule, BackendStatusComponent, BackendWaitDialogComponent],
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.css']
 })
-export class LoginPageComponent implements AfterViewInit, OnDestroy {
+export class LoginPageComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('sceneCanvas', { static: true }) private sceneCanvas?: ElementRef<HTMLCanvasElement>;
   @ViewChild('visualPanel', { static: true }) private visualPanel?: ElementRef<HTMLElement>;
   @ViewChild('loginCard', { static: true }) private loginCard?: ElementRef<HTMLFormElement>;
@@ -23,6 +27,9 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
     password: ['', Validators.required]
   });
   loading = false;
+  waitingForBackend = false;
+  private pendingLogin?: Subscription;
+  private stopMonitoring?: () => void;
   errorMessage = '';
   readonly demoRoles = [
     { label: 'Admin', email: 'admin@orqestra.demo' },
@@ -57,8 +64,11 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
     private readonly formBuilder: FormBuilder,
     private readonly authService: AuthService,
     private readonly router: Router,
-    private readonly ngZone: NgZone
+    private readonly ngZone: NgZone,
+    readonly backend: BackendStatusService
   ) {}
+
+  ngOnInit(): void { this.stopMonitoring = this.backend.monitor(); }
 
   ngAfterViewInit(): void {
     const canvas = this.sceneCanvas?.nativeElement;
@@ -74,12 +84,15 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.pendingLogin?.unsubscribe();
+    this.stopMonitoring?.();
     this.scene?.destroy();
     this.removeSpotlightListeners?.();
     if (this.spotlightFrameId !== null) cancelAnimationFrame(this.spotlightFrameId);
   }
 
   submit(): void {
+    if (this.loading) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.errorMessage = 'Enter a valid email address and password.';
@@ -88,15 +101,28 @@ export class LoginPageComponent implements AfterViewInit, OnDestroy {
 
     this.loading = true;
     this.errorMessage = '';
-    this.authService.login(this.form.getRawValue()).subscribe({
-      next: () => void this.router.navigateByUrl('/dashboard'),
+    this.waitingForBackend = this.backend.state !== 'ready';
+    this.pendingLogin = this.backend.whenReady().pipe(switchMap(ready => {
+      this.waitingForBackend = false;
+      return ready ? this.authService.login(this.form.getRawValue()).pipe(timeout(30000))
+        : throwError(() => ({ status: 503 }));
+    })).subscribe({
+      next: () => { this.loading = false; void this.router.navigateByUrl('/dashboard'); },
       error: (error: { status?: number }) => {
         this.loading = false;
-        this.errorMessage = error?.status === 0 || (error?.status ?? 0) >= 500
+        this.waitingForBackend = false;
+        this.errorMessage = error instanceof TimeoutError || error?.status === 0 || (error?.status ?? 0) >= 500
           ? 'The showcase service is unavailable. Please try again shortly.'
           : 'Invalid email or password.';
       }
     });
+  }
+
+  cancelPendingLogin(): void {
+    this.pendingLogin?.unsubscribe();
+    this.waitingForBackend = false;
+    this.loading = false;
+    this.form.controls.password.reset();
   }
 
   private bindSpotlight(): void {

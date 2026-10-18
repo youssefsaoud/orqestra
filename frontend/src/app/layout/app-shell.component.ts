@@ -1,5 +1,8 @@
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { BackendStatusService } from '../core/api/backend-status.service';
+import { BackendStatusComponent } from '../core/api/backend-status.component';
+import { ResponsiveTablesDirective } from '../shared/responsive-tables.directive';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 import { AuthService } from '../core/auth/auth.service';
@@ -22,11 +25,12 @@ interface NavGroup {
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [AsyncPipe, NgFor, NgIf, RouterLink, RouterLinkActive, RouterOutlet, ShowcaseActionsDirective],
+  imports: [AsyncPipe, NgFor, NgIf, RouterLink, RouterLinkActive, RouterOutlet, ShowcaseActionsDirective, BackendStatusComponent, ResponsiveTablesDirective],
   templateUrl: './app-shell.component.html',
   styleUrls: ['./app-shell.component.css']
 })
-export class AppShellComponent {
+export class AppShellComponent implements OnInit, OnDestroy {
+  private stopMonitoring?: () => void;
   readonly navGroups: NavGroup[] = [
     {
       label: 'Workspace',
@@ -63,9 +67,12 @@ export class AppShellComponent {
 
   @ViewChild('sidebar') private sidebar?: ElementRef<HTMLElement>;
   @ViewChild('menuButton') private menuButton?: ElementRef<HTMLButtonElement>;
-  constructor(private readonly authService: AuthService, private readonly router: Router, private readonly changeDetector: ChangeDetectorRef, showcase: ShowcaseService) {
+  constructor(private readonly authService: AuthService, private readonly router: Router, private readonly changeDetector: ChangeDetectorRef, showcase: ShowcaseService, private readonly backend: BackendStatusService) {
     showcase.welcome();
   }
+
+  ngOnInit(): void { this.stopMonitoring = this.backend.monitor(); }
+  ngOnDestroy(): void { this.stopMonitoring?.(); }
 
   openNavigation(): void {
     this.mobileOpen = true;

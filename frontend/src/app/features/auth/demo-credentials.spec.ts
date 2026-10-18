@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
+import { BackendStatusService } from '../../core/api/backend-status.service';
 import { LoginPageComponent } from './login-page.component';
 
 describe('Showcase demo account picker', () => {
@@ -9,7 +10,8 @@ describe('Showcase demo account picker', () => {
   beforeEach(async () => {
     auth = jasmine.createSpyObj<AuthService>('AuthService',['login']);
     await TestBed.configureTestingModule({imports:[LoginPageComponent],providers:[
-      {provide:AuthService,useValue:auth}, {provide:Router,useValue:{navigateByUrl:jasmine.createSpy('navigateByUrl')}}
+      {provide:AuthService,useValue:auth}, {provide:Router,useValue:{navigateByUrl:jasmine.createSpy('navigateByUrl')}},
+      {provide:BackendStatusService,useValue:{state:'ready',state$:of('ready'),monitor:()=>()=>{},whenReady:()=>of(true)}}
     ]}).compileComponents();
     spyOn(LoginPageComponent.prototype,'ngAfterViewInit').and.stub();
   });
@@ -31,7 +33,7 @@ describe('Showcase demo account picker', () => {
     const page=fixture.componentInstance; page.selectDemoRole(page.demoRoles[1]);
     await page.copyDemoValue('email'); expect(copy).toHaveBeenCalledWith('manager@orqestra.demo');
     await page.copyDemoValue('password'); expect(copy).toHaveBeenCalledWith('OrqestraDemo2026!');
-    fixture.detectChanges(); expect(fixture.nativeElement.querySelector('[role="status"]').textContent).toContain('Password copied');
+    fixture.detectChanges(); expect(fixture.nativeElement.querySelector('.copy-status').textContent).toContain('Password copied');
     expect(auth.login).not.toHaveBeenCalled();
   });
   it('handles denied clipboard permissions without altering login', async () => {
